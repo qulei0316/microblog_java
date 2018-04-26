@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qulei.dao.ArticleDao">
+
+    <sql id="Base_column">
+        ID,TITLE,CREATE_TIME,CONTENT,COLLECTION_ID,TYPE,USER_ID,COLLECTION_NAME
+    </sql>
+
+    <!--保存文章-->
+    <insert id="saveArticle" parameterType="ArticleDto">
+        INSERT INTO  ARTICLE
+        (
+        <trim suffixOverrides="," suffix=" ">
+            <if test="id!= null and id!='' ">id,</if>
+            <if test="title != null and title!='' ">title,</if>
+            <if test="create_time != null">create_time,</if>
+            <if test="content != null and content!='' ">content,</if>
+            <if test="collection_id != null and collection_id!='' ">collection_id,</if>
+            <if test="collection_id != null and collection_id!='' ">collection_name,</if>
+            <if test="user_id != null and user_id!='' ">user_id,</if>
+            <if test="type != null">type,</if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides="," suffix=" ">
+            <if test="id!= null and id!='' ">#{id},</if>
+            <if test="title != null and title!='' ">#{title},</if>
+            <if test="create_time != null">#{create_time},</if>
+            <if test="content != null and content!='' ">#{content},</if>
+            <if test="collection_id != null and collection_id!='' ">#{collection_id},</if>
+            <if test="collection_id != null and collection_id!='' ">#{collection_name},</if>
+            <if test="user_id != null and user_id!='' ">#{user_id},</if>
+            <if test="type != null ">#{type},</if>
+        </trim>
+        )
+    </insert>
+    
+    <!--根据id查询文章-->
+    <select id="getArticleById" resultType="Article">
+        SELECT <include refid="Base_column"/> from ARTICLE
+        WHERE id = #{id} and user_id = #{user_id}
+    </select>
+
+    <!--根据文集和类型搜索文章列表-->
+    <select id="getArticleListByType" parameterType="ArticleDto" resultType="Article">
+        SELECT <include refid="Base_column"/> from ARTICLE
+        where 1=1
+        <if test="collection_id!=null and collection_id!='' ">AND collection_id = #{collection_id}</if>
+        <if test="type!=null ">AND type = #{type}</if>
+        <if test="user_id!=null and user_id!='' ">AND user_id=#{user_id}</if>
+        ORDER BY create_time DESC LIMIT #{startIndex},8
+    </select>
+
+    <select id="getTotalSizeByType" parameterType="ArticleDto" resultType="int">
+        SELECT count(1) from ARTICLE
+        where 1=1
+        <if test="collection_id!=null and collection_id!='' ">AND collection_id = #{collection_id}</if>
+        <if test="type!=null ">AND type = #{type}</if>
+        <if test="user_id!=null and user_id!='' ">AND user_id=#{user_id}</if>
+    </select>
+
+    <!--修改文章-->
+    <update id="edit" parameterType="ArticleDto">
+        UPDATE ARTICLE SET title = #{title},collection_id=#{collection_id},collection_name=#{collection_name},content=#{content}  WHERE id = #{id}
+    </update>
+
+    <update id="changeType" parameterType="ArticleDto">
+        UPDATE ARTICLE SET type=#{type} where 1=1
+        <if test="id!=null and id!='' ">AND id = #{id}</if>
+    </update>
+
+    <update id="move" parameterType="ArticleDto">
+        UPDATE ARTICLE SET collection_id=#{collection_id},collection_name=#{collection_name} where id = #{id}
+    </update>
+
+    <select id="getArticleListByKeyWord" resultType="Article" parameterType="ArticleDto">
+        SELECT <include refid="Base_column"/> from ARTICLE
+        where 1=1
+        <if test="collection_id!=null and collection_id!='' ">AND collection_id = #{collection_id}</if>
+        <if test="collection_name!=null and collection_name!='' ">AND collection_name = #{collection_name}</if>
+        <if test="type!=null ">AND type = #{type}</if>
+        <if test="keywords!=null and keywords!='' ">
+            AND (title like concat(#{keywords},'%') OR title LIKE  concat(concat('%',#{keywords}),'%') OR title LIKE concat('%',#{keywords}) OR title=#{keywords})
+        </if>
+        <if test="user_id!=null and user_id!='' ">AND user_id=#{user_id}</if>
+        ORDER BY create_time DESC LIMIT #{startIndex},8
+    </select>
+
+    <select id="getTotalSizeByKeyword" resultType="int" parameterType="ArticleDto">
+        SELECT COUNT(1) from ARTICLE
+        where 1=1
+        <if test="collection_id!=null and collection_id!='' ">AND collection_id = #{collection_id}</if>
+        <if test="type!=null ">AND type = #{type}</if>
+        <if test="user_id!=null and user_id!='' ">AND user_id=#{user_id}</if>
+        <if test="keywords!=null and keywords!='' ">
+            AND (title like concat(#{keywords},',%') OR title LIKE  concat(concat('%,',#{keywords}),',%') OR title LIKE concat('%,',#{keywords}) OR title=#{keywords})
+        </if>
+    </select>
+
+</mapper>

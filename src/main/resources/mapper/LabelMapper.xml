@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qulei.dao.LabelDao">
+
+    <sql id="Base_column">
+        ID,ARTICLE_ID,CONTENT
+    </sql>
+
+    <insert id="addlabel" parameterType="Label">
+        INSERT INTO LABEL
+        (
+        <trim suffixOverrides="," suffix=" ">
+            <if test="id!= null and id!='' ">id,</if>
+            <if test="article_id != null and article_id!='' ">article_id,</if>
+            <if test="content != null and content!=''">content,</if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides="," suffix=" ">
+            <if test="id!= null and id!='' ">#{id},</if>
+            <if test="article_id != null and article_id!='' ">#{article_id},</if>
+            <if test="content != null and content!=''">#{content},</if>
+        </trim>
+        )
+    </insert>
+
+
+    <select id="getLabelList" parameterType="String" resultType="Label">
+        SELECT <include refid="Base_column"/> from LABEL
+        where article_id = #{article_id}
+    </select>
+
+
+    <!--删除-->
+    <delete id="delete" parameterType="String">
+        DELETE FROM LABEL where article_id = #{article_id}
+    </delete>
+</mapper>

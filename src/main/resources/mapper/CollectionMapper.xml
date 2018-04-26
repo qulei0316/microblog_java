@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qulei.dao.CollectionDao">
+
+    <sql id="Base_column">
+        ID,NAME,USER_ID
+    </sql>
+
+    <insert id="add" parameterType="art_Collection">
+        INSERT INTO COLLECTION (ID,NAME,USER_ID) VALUES (#{id},#{name},#{user_id})
+    </insert>
+
+    <update id="update" parameterType="art_Collection">
+        UPDATE COLLECTION SET NAME=#{name} where id = #{id}
+    </update>
+
+    <select id="getList" parameterType="String" resultType="art_Collection">
+        SELECT <include refid="Base_column"/> from COLLECTION
+        where user_id=#{user_id}
+    </select>
+
+    <select id="getNameById" resultType="String" parameterType="String">
+        select name from collection where id = #{id}
+    </select>
+
+    <delete id="delete" parameterType="art_Collection">
+        DELETE FROM COLLECTION WHERE user_id=#{user_id} and id = #{id}
+    </delete>
+</mapper>
